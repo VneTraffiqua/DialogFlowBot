@@ -1,9 +1,9 @@
 import logging
-from dotenv import load_dotenv
-import os
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext import Filters, CallbackContext
+from google.cloud import dialogflow
+from environs import Env
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -18,7 +18,7 @@ def start(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
     update.message.reply_markdown_v2(
         fr'Здравствуйте, {user.mention_markdown_v2()}\!',
-        reply_markup=ForceReply(selective=True),
+        # reply_markup=ForceReply(selective=True),
     )
 
 
@@ -32,9 +32,45 @@ def echo(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(update.message.text)
 
 
+def bot_answer(update: Update, context: CallbackContext) -> None:
+    env = Env()
+    env.read_env()
+    text = update.message.text
+    project_id = env.str('PROJECT_ID')
+    session_id = env.str('DIALOGFLOW_TOKEN')
+    language_code = 'ru-RU'
+    update.message.reply_text(
+        detect_intent_texts(project_id, session_id, text, language_code)
+    )
+
+
+def detect_intent_texts(project_id, session_id, text, language_code):
+    """Returns the result of detect intent with texts as inputs.
+    Using the same `session_id` between requests allows continuation
+    of the conversation."""
+
+    session_client = dialogflow.SessionsClient()
+
+    session = session_client.session_path(project_id, session_id)
+
+    text_input = dialogflow.TextInput(
+        text=text, language_code=language_code
+    )
+
+    query_input = dialogflow.QueryInput(text=text_input)
+
+    response = session_client.detect_intent(
+        request={"session": session, "query_input": query_input}
+    )
+
+    return response.query_result.fulfillment_text
+
+
 def main() -> None:
-    load_dotenv()
-    tg_token = os.getenv('TG_TOKEN')
+    env = Env()
+    env.read_env()
+    tg_token = env.str('TG_TOKEN')
+
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
     updater = Updater(tg_token)
@@ -46,9 +82,9 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
 
-    # on non command i.e message - echo the message on Telegram
+    # on non command i.e message - answer DF in the message on Telegram
     dispatcher.add_handler(
-        MessageHandler(Filters.text & ~Filters.command, echo)
+        MessageHandler(Filters.text & ~Filters.command, bot_answer)
     )
 
     # Start the Bot
