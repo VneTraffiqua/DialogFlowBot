@@ -32,22 +32,20 @@ def echo(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(update.message.text)
 
 
-def bot_answer(update: Update, context: CallbackContext) -> None:
-    env = Env()
-    env.read_env()
+def bot_answer(update: Update, context: CallbackContext, project_id, session_id) -> None:
     text = update.message.text
-    project_id = env.str('PROJECT_ID')
-    session_id = env.str('DIALOGFLOW_TOKEN')
     language_code = 'ru-RU'
-    update.message.reply_text(
-        detect_intent_texts(project_id, session_id, text, language_code)
-    )
+    message = detect_intent_texts(project_id, session_id, text, language_code)
+    if message:
+        update.message.reply_text(message)
 
 
 def main() -> None:
     env = Env()
     env.read_env()
     tg_token = env.str('TG_TOKEN')
+    project_id = env.str('PROJECT_ID')
+    session_id = env.str('DIALOGFLOW_TOKEN')
 
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
@@ -62,7 +60,12 @@ def main() -> None:
 
     # on non command i.e message - answer DF in the message on Telegram
     dispatcher.add_handler(
-        MessageHandler(Filters.text & ~Filters.command, bot_answer())
+        MessageHandler(
+            Filters.text & ~Filters.command,
+            lambda update, context: bot_answer(
+                update, context, project_id, session_id
+            )
+        )
     )
 
     # Start the Bot

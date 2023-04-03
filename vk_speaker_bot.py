@@ -17,12 +17,15 @@ if __name__ == '__main__':
     vk_session = vk_api.VkApi(token=vk_token)
     vk = vk_session.get_api()
     longpoll = VkLongPoll(vk_session)
+
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-            vk.messages.send(
-                user_id=event.user_id,
-                message=detect_intent_texts(
-                    project_id, session_id, event.text, language_code
-                ),
-                random_id=random.randint(1, 1000)
+            message = detect_intent_texts(
+                project_id, session_id, event.text, language_code
             )
+            if message:
+                vk.messages.send(
+                    user_id=event.user_id,
+                    message=message,
+                    random_id=random.randint(1, 1000)
+                )
