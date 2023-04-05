@@ -93,6 +93,9 @@ def main() -> None:
         logger.debug('Неверный токен')
         logger.exception(err)
 
+    except error.NetworkError as err:
+        logger.debug('Ошибка соединения')
+        logger.exception(err)
 
 if __name__ == '__main__':
     main()
