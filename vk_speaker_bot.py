@@ -4,18 +4,18 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 from environs import Env
 import random
 from hendlers import LogsHandler
-from utils import detect_intent_texts
+from df_connector import detect_intent_texts
 from vk_api.exceptions import VkRequestsPoolException, ApiHttpError, AuthError, ApiError
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
 
 logger = logging.getLogger(__name__)
 
 
 if __name__ == '__main__':
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.INFO
+    )
     env = Env()
     env.read_env()
     tg_logger_token = env.str('TELEGRAM_LOGGER_TOKEN')

@@ -3,13 +3,9 @@ from telegram import Update, ForceReply, error
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext import Filters, CallbackContext
 from environs import Env
-from utils import detect_intent_texts
+from df_connector import detect_intent_texts
 from hendlers import LogsHandler
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +37,10 @@ def bot_answer(update: Update, context: CallbackContext, project_id, session_id)
 
 
 def main() -> None:
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.INFO
+    )
     env = Env()
     env.read_env()
     tg_token = env.str('TG_TOKEN')
