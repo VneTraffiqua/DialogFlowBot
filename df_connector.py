@@ -32,3 +32,4 @@ if __name__ == '__main__':
     language_code = 'ru-RU'
 
     detect_intent_texts(project_id, session_id, texts, language_code)
+    
