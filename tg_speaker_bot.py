@@ -23,11 +23,6 @@ def help_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Help!')
 
 
-def echo(update: Update, context: CallbackContext) -> None:
-    """Echo the user message."""
-    update.message.reply_text(update.message.text)
-
-
 def bot_answer(update: Update, context: CallbackContext, project_id, session_id) -> None:
     text = update.message.text
     language_code = 'ru-RU'
@@ -81,8 +76,8 @@ def main() -> None:
         # SIGTERM or SIGABRT. This should be used most of the time, since
         # start_polling() is non-blocking and will stop the bot gracefully.
         updater.idle()
-    except error.BadRequest as err:
-        logger.debug('Ощибка соединения')
+    except (error.BadRequest, error.NetworkError) as err:
+        logger.debug('Ошибка соединения')
         logger.exception(err)
 
     except error.TelegramError as err:
@@ -93,9 +88,6 @@ def main() -> None:
         logger.debug('Неверный токен')
         logger.exception(err)
 
-    except error.NetworkError as err:
-        logger.debug('Ошибка соединения')
-        logger.exception(err)
 
 if __name__ == '__main__':
     main()
