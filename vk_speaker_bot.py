@@ -44,19 +44,7 @@ if __name__ == '__main__':
                             message=message,
                             random_id=random.randint(1, 1000)
                         )
-    except VkRequestsPoolException as err:
-        logger.debug('Бот упал с ошибкой')
-        logger.exception(err)
-
-    except AuthError as err:
-        logger.debug('Бот упал с ошибкой')
-        logger.exception(err)
-
-    except ApiHttpError as err:
-        logger.debug('Бот упал с ошибкой')
-        logger.exception(err)
-
-    except ApiError as err:
+    except (VkRequestsPoolException, AuthError, ApiHttpError, ApiError) as err:
         logger.debug('Бот упал с ошибкой')
         logger.exception(err)
 
