@@ -40,10 +40,10 @@ if __name__ == '__main__':
     with open('questions.json', 'r') as file:
         questions = json.loads(file.read())
 
-    for key, value in questions.items():
+    for question_topic, training_phrases in questions.items():
         create_intent(
             project_id=project_id,
-            display_name=key,
-            training_phrases_parts=value['questions'],
-            message_texts=[value['answer'],]
+            display_name=question_topic,
+            training_phrases_parts=training_phrases['questions'],
+            message_texts=[training_phrases['answer'], ]
         )
