@@ -22,7 +22,7 @@ if __name__ == '__main__':
     tg_chat_id = env.str('TG_CHAT_ID')
     vk_token = env.str('VK_TOKEN')
     project_id = env.str('PROJECT_ID')
-    session_id = env.str('DIALOGFLOW_TOKEN')
+    session_id = f"vk-{env.str('DIALOGFLOW_TOKEN')}"
     language_code = 'ru-RU'
     try:
         logger.setLevel(logging.DEBUG)
@@ -38,10 +38,10 @@ if __name__ == '__main__':
                     message = detect_intent_texts(
                         project_id, session_id, event.text, language_code
                     )
-                    if message:
+                    if not message.intent.is_fallback:
                         vk.messages.send(
                             user_id=event.user_id,
-                            message=message,
+                            message=message.fulfillment_text,
                             random_id=random.randint(1, 1000)
                         )
     except (VkRequestsPoolException, AuthError, ApiHttpError, ApiError) as err:
