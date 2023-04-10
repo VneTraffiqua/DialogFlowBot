@@ -28,11 +28,14 @@ def help_command(update: Update, context: CallbackContext) -> None:
     )
 
 
-def bot_answer(update: Update, context: CallbackContext, project_id, session_id) -> None:
+def bot_answer(update: Update, context: CallbackContext, project_id) -> None:
     text = update.message.text
     language_code = 'ru-RU'
     message = detect_intent_texts(
-        project_id, session_id, text, language_code
+        project_id,
+        f"tg-{update.effective_chat.id}",
+        text,
+        language_code
     ).fulfillment_text
     update.message.reply_text(message)
 
@@ -46,7 +49,6 @@ def main() -> None:
     env.read_env()
     tg_token = env.str('TG_TOKEN')
     project_id = env.str('PROJECT_ID')
-    session_id = f"tg-{env.str('DIALOGFLOW_TOKEN')}"
     tg_logger_token = env.str('TELEGRAM_LOGGER_TOKEN')
     tg_chat_id = env.str('TG_CHAT_ID')
 
@@ -70,7 +72,7 @@ def main() -> None:
             MessageHandler(
                 Filters.text & ~Filters.command,
                 lambda update, context: bot_answer(
-                    update, context, project_id, session_id
+                    update, context, project_id
                 )
             )
         )

@@ -34,16 +34,19 @@ if __name__ == '__main__':
         longpoll = VkLongPoll(vk_session)
 
         for event in longpoll.listen():
-                if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-                    message = detect_intent_texts(
-                        project_id, session_id, event.text, language_code
+            if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+                message = detect_intent_texts(
+                    project_id,
+                    f"vk-{event.user_id}",
+                    event.text,
+                    language_code
+                )
+                if not message.intent.is_fallback:
+                    vk.messages.send(
+                        user_id=event.user_id,
+                        message=message.fulfillment_text,
+                        random_id=random.randint(1, 1000)
                     )
-                    if not message.intent.is_fallback:
-                        vk.messages.send(
-                            user_id=event.user_id,
-                            message=message.fulfillment_text,
-                            random_id=random.randint(1, 1000)
-                        )
     except (VkRequestsPoolException, AuthError, ApiHttpError, ApiError) as err:
         logger.debug('Бот упал с ошибкой')
         logger.exception(err)
