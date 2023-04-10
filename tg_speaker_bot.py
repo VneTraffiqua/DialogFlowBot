@@ -29,12 +29,11 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 
 def bot_answer(update: Update, context: CallbackContext, project_id) -> None:
-    language_code = 'ru-RU'
     message = detect_intent_texts(
         project_id,
         f"tg-{update.message.chat_id}",
         update.message.text,
-        language_code
+        'ru-RU'
     ).fulfillment_text
     update.message.reply_text(message)
 
