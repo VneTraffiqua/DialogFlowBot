@@ -20,7 +20,12 @@ def start(update: Update, context: CallbackContext) -> None:
 
 def help_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text(
+        'Вас приветствует, бот поддержки онлайн-издательства "Игра глаголов".'
+        '«Игра глаголов» – крупное онлайн-издательство, '
+        'помогающее продвигать авторские блоги и публиковать книги.'
+        'Вы можете задать любой, интересующий вас вопрос в чате=)'
+    )
 
 
 def bot_answer(update: Update, context: CallbackContext, project_id, session_id) -> None:
